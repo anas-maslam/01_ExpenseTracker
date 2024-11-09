@@ -92,6 +92,7 @@ class Expense:
 class ExpenseTracker:
     def __init__(self):
         self.expenses = {}
+        self.budgets = {}
 
     def add_expense(self, email, sno, amount, category, description="", date=None):
         if amount <= 0:
@@ -112,6 +113,12 @@ class ExpenseTracker:
         # self.expenses[email].append(expense)
         return expense
 
+    def get_month_expense(self, email, month):
+        if email in self.expenses:
+            return sum(expense["amount"] for expense in self.expenses[email] if datetime.strptime(expense["date"], "%Y-%m-%d").strftime("%m") == month)
+        else:
+            return 0
+
     def delete_expense(self, sno, email):
         if email in self.expenses:
             expenses_for_email = self.expenses[email]  # Accessing the list using the __getitem__ method
@@ -124,6 +131,16 @@ class ExpenseTracker:
                     self.save_expenses()
                     return True
         return False
+
+    def set_monthly_budget(self, email, month, year, amount):
+        if email not in self.budgets:
+            self.budgets[email] = {}
+        self.budgets[email][f"{year}-{month:02d}"] = amount
+        print(f"Budget for {month}/{year} set to {amount}")
+
+    def get_monthly_budget(self, email, month, year):
+        month = int(month)  # Convert month to integer
+        return int(self.budgets.get(email, {}).get(f"{year}-{month:02d}", 0))
 
     def save_expenses(self):
         with open("expenses.json", "w") as file:
@@ -142,44 +159,23 @@ class ExpenseTracker:
             self.expenses = {}
 
         # Display the user's expenses
-        if not self.expenses[email]:
+        if email not in self.expenses:
             print("No expenses found for this user.")
         else:
             print("Expenses for:", email)
             for expense in self.expenses[email]:
                 print(expense)
 
-        # if not email in self.expenses:
-        #     self.expenses[email] = []
-        # else:
-        #     # Load expenses for the given email if they exist in the JSON
-        #     if email in existing_expenses:
-        #         self.expenses[email] = [
-        #             Expense(
-        #                 expense["sno"],
-        #                 expense["amount"],
-        #                 expense["category"],
-        #                 expense["description"],
-        #                 datetime.datetime.strptime(expense["date"], "%Y-%m-%d").date()
-        #             ) for expense in existing_expenses[email]
-        #         ]
-        #     else:
-        #         # If there are no expenses for this email, you can initialize it
-        #         self.expenses[email] = []  # Ensure it's initialized
-        #
-        #     # Display the user's expenses
-        #     if not self.expenses[email]:
-        #         print("No expenses found for this user.")
-        #     else:
-        #         print("Expenses for:", email)
-        #         for expense in self.expenses[email]:
-        #             print(expense)
-
     def total_expenses(self, email):
+        if email not in self.expenses:
+            return 0
         return sum(expense["amount"] for expense in self.expenses[email])
 
     def filter_by_category(self, email, category):
-        return [expense for expense in self.expenses[email] if expense["category"] == category]
+        if email in self.expenses:
+            return [expense for expense in self.expenses[email] if expense["category"] == category]
+        else:
+            return []
 
     def monthly_report(self, email, month, year):
         # Open to debug
@@ -197,7 +193,10 @@ class ExpenseTracker:
             return []
 
     def search_expenses(self, email, keyword):
-        return [expense for expense in self.expenses[email] if keyword.lower() in expense["description"].lower()]
+        if email not in self.expenses:
+            return []
+        else:
+            return [expense for expense in self.expenses[email] if keyword.lower() in expense["description"].lower()]
 
     def write_expenses_json_file(self, email, expense):
         if os.path.exists("expenses.json"):
@@ -273,7 +272,7 @@ def expense_tracker_menu():
     while True:
         print("\nExpense Tracker Menu:")
         print("1. Add Expense")
-        print("2. Delete Expense")
+        print("2. Set Monthly Budget")
         print("3. View Expenses")
         print("4. Filter by Category")
         print("5. Monthly Report")
@@ -294,18 +293,37 @@ def expense_tracker_menu():
 
             sno = get_max_sno_json_file(email) + 1
             amount = float(input("Enter amount: "))
+
             category = input("Enter category: ")
             description = input("Enter description: ")
             date_input = input("Enter date (YYYY-MM-DD) or leave blank for today: ")
-            date = datetime.datetime.strptime(date_input, "%Y-%m-%d") if date_input else ""
+            if date_input == "":
+                date_input = datetime.today().strftime("%Y-%m-%d")
+
+            # Get month from date
+            month = date_input.split("-")[1]
+            year = date_input.split("-")[0]
+            monthly_budget = tracker.get_monthly_budget(email, month, year)
+            curr_budget = tracker.get_month_expense(email, month)
+            if monthly_budget == 0:
+                print(f"No budget set for the current month {month}.\n")
+            else:
+                print(f"Current utilized budget for month {month} is: {curr_budget}\n")
+
+            if amount > 0:
+                if amount + curr_budget > monthly_budget:
+                    print(f"[Caution]: Amount exceeds Total Monthly budget {monthly_budget}.\n")
+
             # date = date_input if date_input else None
-            expense = tracker.add_expense(email, sno, amount, category, description, date)
+            expense = tracker.add_expense(email, sno, amount, category, description, date_input)
             tracker.write_expenses_json_file(email, expense)
 
         elif choice == "2":
-            tracker.view_expenses(email)
-            sno = int(input("\n\nEnter expense sno to delete: "))
-            tracker.delete_expense(sno, email)
+            # tracker.view_expenses(email)
+            month = int(input("Enter month (1-12): "))
+            year = int(input("Enter year: "))
+            amount = float(input("Enter the total amount you want to budget for the month: "))
+            tracker.set_monthly_budget(email, month, year, amount)
 
         elif choice == "3":
             tracker.view_expenses(email)
@@ -314,8 +332,11 @@ def expense_tracker_menu():
             tracker.view_expenses(email)
             category = input("\n\nEnter category to filter by: ")
             filtered = tracker.filter_by_category(email, category)
-            for expense in filtered:
-                print(expense)
+            if not filtered:
+                print("No expenses found for the given category")
+            else:
+                for expense in filtered:
+                    print(expense)
 
         elif choice == "5":
             month = int(input("Enter month (1-12): "))

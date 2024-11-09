@@ -27,22 +27,71 @@
             "category": "utility",
             "amount": 699.0,
             "date": "2024-11-06"
+        },
+        {
+            "sno": 6,
+            "description": "burger for lunch",
+            "category": "food",
+            "amount": 300.0,
+            "date": "2024-11-09"
+        },
+        {
+            "sno": 7,
+            "description": "Dinner for Monday",
+            "category": "food",
+            "amount": 400.0,
+            "date": "2024-11-09"
+        },
+        {
+            "sno": 8,
+            "description": "External expenses.",
+            "category": "misc",
+            "amount": 250.0,
+            "date": "2024-12-03"
+        },
+        {
+            "sno": 9,
+            "description": "Mobile bill",
+            "category": "utility",
+            "amount": 190.0,
+            "date": "2024-12-05"
+        },
+        {
+            "sno": 10,
+            "description": "Breakfast expense for Thursday",
+            "category": "food",
+            "amount": 320.0,
+            "date": "2024-12-01"
         }
     ],
-    "raul@gmail.com": [
+    "anas@gmail.com": [
         {
             "sno": 1,
-            "description": "Sandwich",
+            "description": "Dinner for Sunday",
             "category": "food",
             "amount": 250.0,
-            "date": "2024-11-04"
+            "date": "2024-11-09"
         },
         {
             "sno": 2,
-            "description": "Family dinner",
-            "category": "food",
-            "amount": 750.0,
-            "date": "2024-11-04"
+            "description": "Bill for setup box",
+            "category": "utility",
+            "amount": 333.0,
+            "date": "2024-10-31"
+        },
+        {
+            "sno": 3,
+            "description": "Stationary items for office",
+            "category": "Stationary",
+            "amount": 800.0,
+            "date": "2024-10-10"
+        },
+        {
+            "sno": 4,
+            "description": "scooty petrol topup",
+            "category": "fuel",
+            "amount": 195.0,
+            "date": "2024-01-01"
         }
     ]
 }
