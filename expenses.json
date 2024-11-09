@@ -1,0 +1,48 @@
+{
+    "anas@adobe.com": [
+        {
+            "sno": 1,
+            "description": "Burger",
+            "category": "food",
+            "amount": 250.0,
+            "date": "2024-11-04"
+        },
+        {
+            "sno": 2,
+            "description": "Petrol topup",
+            "category": "fuel",
+            "amount": 1500.0,
+            "date": "2024-11-04"
+        },
+        {
+            "sno": 3,
+            "description": "electricity bill",
+            "category": "utility",
+            "amount": 2000.0,
+            "date": "2024-11-04"
+        },
+        {
+            "sno": 5,
+            "description": "Mobile Topup",
+            "category": "utility",
+            "amount": 699.0,
+            "date": "2024-11-06"
+        }
+    ],
+    "raul@gmail.com": [
+        {
+            "sno": 1,
+            "description": "Sandwich",
+            "category": "food",
+            "amount": 250.0,
+            "date": "2024-11-04"
+        },
+        {
+            "sno": 2,
+            "description": "Family dinner",
+            "category": "food",
+            "amount": 750.0,
+            "date": "2024-11-04"
+        }
+    ]
+}
